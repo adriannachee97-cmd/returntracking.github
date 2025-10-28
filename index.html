@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Tracking System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        h1 {
+            font-size: 24px;
+            color: #2c3e50;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-info {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .table-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .status-pending {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .status-returned {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .status-sent {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        .status-complete {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .warning {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .close {
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .search-container {
+            margin-bottom: 15px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .status-actions {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        
+        .remark-display {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            border-left: 3px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Section -->
+        <div id="login-section" class="form-container">
+            <h2>Login to Return Tracking System</h2>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+            <button id="login-btn" class="btn btn-primary">Login</button>
+            <p style="margin-top: 15px;">Don't have an account? <a href="#" id="register-link">Register here</a></p>
+        </div>
+
+        <!-- Registration Section -->
+        <div id="register-section" class="form-container hidden">
+            <h2>Register New Account</h2>
+            <div class="form-group">
+                <label for="new-username">Username</label>
+                <input type="text" id="new-username" placeholder="Choose a username">
+            </div>
+            <div class="form-group">
+                <label for="new-password">Password</label>
+                <input type="password" id="new-password" placeholder="Choose a password">
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" placeholder="Confirm your password">
+            </div>
+            <button id="register-btn" class="btn btn-primary">Register</button>
+            <p style="margin-top: 15px;">Already have an account? <a href="#" id="login-link">Login here</a></p>
+        </div>
+
+        <!-- Main Application (hidden until login) -->
+        <div id="app-section" class="hidden">
+            <header>
+                <h1>Return Tracking System</h1>
+                <div class="user-info">
+                    <span id="current-user">User</span>
+                    <button id="logout-btn" class="btn btn-danger">Logout</button>
+                </div>
+            </header>
+
+            <!-- Data Entry Form -->
+            <div class="form-container">
+                <h2>Add New Return</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rpo-no">RPO NO.</label>
+                        <input type="text" id="rpo-no" placeholder="Enter RPO number">
+                    </div>
+                    <div class="form-group">
+                        <label for="good-issue-slip">GOOD ISSUE SLIP NO.</label>
+                        <input type="text" id="good-issue-slip" placeholder="Enter Good Issue Slip number">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="supplier">SUPPLIER</label>
+                        <input type="text" id="supplier" list="supplier-list" placeholder="Select or enter supplier">
+                        <datalist id="supplier-list"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label for="supervisor">DEPARTMENT SUPERVISOR</label>
+                        <input type="text" id="supervisor" list="supervisor-list" placeholder="Select or enter supervisor">
+                        <datalist id="supervisor-list"></datalist>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button id="save-btn" class="btn btn-success">Save</button>
+                    <button id="cancel-btn" class="btn btn-danger">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Filters and Search -->
+            <div class="filter-container">
+                <select id="status-filter">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="returned">Returned</option>
+                    <option value="sent">Send Account</option>
+                    <option value="complete">Complete</option>
+                </select>
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search...">
+                </div>
+                <button id="export-pdf" class="btn btn-info">Export PDF</button>
+            </div>
+
+            <!-- Returns Table -->
+            <div class="table-container">
+                <table id="returns-table">
+                    <thead>
+                        <tr>
+                            <th>RPO NO.</th>
+                            <th>GOOD ISSUE SLIP NO.</th>
+                            <th>SUPPLIER</th>
+                            <th>DEPARTMENT SUPERVISOR</th>
+                            <th>STATUS</th>
+                            <th>CREATED DATE</th>
+                            <th>CREATED BY</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="returns-body">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="status-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Status</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="status-select">Select Status</label>
+                <select id="status-select">
+                    <option value="pending">PENDING</option>
+                    <option value="returned">RETURNED</option>
+                    <option value="sent">SEND ACCOUNT</option>
+                </select>
+            </div>
+            <div id="returned-date-field" class="form-group hidden">
+                <label for="returned-date">RETURNED DATE</label>
+                <input type="date" id="returned-date">
+            </div>
+            <div id="sent-date-field" class="form-group hidden">
+                <label for="sent-date">SENT ACCOUNT DATE</label>
+                <input type="date" id="sent-date">
+            </div>
+            <div class="form-group">
+                <button id="update-status-btn" class="btn btn-success">Update Status</button>
+                <button id="cancel-status" class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remark Modal -->
+    <div id="remark-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Remark</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="form-group">
+                <textarea id="remark-text" rows="4" style="width: 100%;"></textarea>
+            </div>
+            <div class="form-group">
+                <button id="save-remark" class="btn btn-success">Save</button>
+                <button id="cancel-remark" class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Return Details</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div id="detail-content">
+                <!-- Details will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="export-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Export to PDF</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="start-date">Start Date</label>
+                <input type="date" id="start-date">
+            </div>
+            <div class="form-group">
+                <label for="end-date">End Date</label>
+                <input type="date" id="end-date">
+            </div>
+            <div class="form-group">
+                <button id="confirm-export" class="btn btn-success">Export</button>
+                <button id="cancel-export" class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application state
+        let currentUser = null;
+        let returns = JSON.parse(localStorage.getItem('returns')) || [];
+        let suppliers = JSON.parse(localStorage.getItem('suppliers')) || [];
+        let supervisors = JSON.parse(localStorage.getItem('supervisors')) || [];
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentEditId = null;
+        let currentRemarkId = null;
+        let currentStatusId = null;
+
+        // DOM Elements
+        const loginSection = document.getElementById('login-section');
+        const registerSection = document.getElementById('register-section');
+        const appSection = document.getElementById('app-section');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const registerLink = document.getElementById('register-link');
+        const loginLink = document.getElementById('login-link');
+        const logoutBtn = document.getElementById('logout-btn');
+        const currentUserSpan = document.getElementById('current-user');
+        const saveBtn = document.getElementById('save-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const statusFilter = document.getElementById('status-filter');
+        const searchInput = document.getElementById('search-input');
+        const exportPdfBtn = document.getElementById('export-pdf');
+        const returnsBody = document.getElementById('returns-body');
+        const supplierList = document.getElementById('supplier-list');
+        const supervisorList = document.getElementById('supervisor-list');
+        
+        // Modals
+        const statusModal = document.getElementById('status-modal');
+        const remarkModal = document.getElementById('remark-modal');
+        const detailModal = document.getElementById('detail-modal');
+        const exportModal = document.getElementById('export-modal');
+        
+        // Status modal elements
+        const statusSelect = document.getElementById('status-select');
+        const returnedDateField = document.getElementById('returned-date-field');
+        const sentDateField = document.getElementById('sent-date-field');
+        const updateStatusBtn = document.getElementById('update-status-btn');
+        const cancelStatusBtn = document.getElementById('cancel-status');
+        
+        // Other modal buttons
+        const closeButtons = document.querySelectorAll('.close');
+        const saveRemarkBtn = document.getElementById('save-remark');
+        const cancelRemarkBtn = document.getElementById('cancel-remark');
+        const confirmExportBtn = document.getElementById('confirm-export');
+        const cancelExportBtn = document.getElementById('cancel-export');
+
+        // Initialize the application
+        function init() {
+            // Check if user is already logged in
+            const loggedInUser = localStorage.getItem('currentUser');
+            if (loggedInUser) {
+                currentUser = loggedInUser;
+                showAppSection();
+            }
+
+            // Populate supplier and supervisor datalists
+            updateDatalists();
+            
+            // Render returns table
+            renderReturnsTable();
+            
+            // Set up event listeners
+            setupEventListeners();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            loginBtn.addEventListener('click', handleLogin);
+            registerBtn.addEventListener('click', handleRegister);
+            registerLink.addEventListener('click', showRegisterSection);
+            loginLink.addEventListener('click', showLoginSection);
+            logoutBtn.addEventListener('click', handleLogout);
+            saveBtn.addEventListener('click', handleSave);
+            cancelBtn.addEventListener('click', handleCancel);
+            statusFilter.addEventListener('change', renderReturnsTable);
+            searchInput.addEventListener('input', renderReturnsTable);
+            exportPdfBtn.addEventListener('click', showExportModal);
+            
+            // Status modal events
+            statusSelect.addEventListener('change', handleStatusSelectChange);
+            updateStatusBtn.addEventListener('click', updateStatus);
+            cancelStatusBtn.addEventListener('click', () => statusModal.style.display = 'none');
+            
+            // Other modal events
+            closeButtons.forEach(btn => btn.addEventListener('click', closeModals));
+            saveRemarkBtn.addEventListener('click', saveRemark);
+            cancelRemarkBtn.addEventListener('click', () => remarkModal.style.display = 'none');
+            confirmExportBtn.addEventListener('click', exportToPDF);
+            cancelExportBtn.addEventListener('click', () => exportModal.style.display = 'none');
+        }
+
+        // Handle user login
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                alert('Please enter both username and password');
+                return;
+            }
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                currentUser = username;
+                localStorage.setItem('currentUser', username);
+                showAppSection();
+            } else {
+                alert('Invalid username or password');
+            }
+        }
+
+        // Handle user registration
+        function handleRegister() {
+            const username = document.getElementById('new-username').value;
+            const password = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (!username || !password || !confirmPassword) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            if (users.find(u => u.username === username)) {
+                alert('Username already exists');
+                return;
+            }
+            
+            users.push({ username, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Registration successful! Please login.');
+            showLoginSection();
+        }
+
+        // Show registration section
+        function showRegisterSection() {
+            loginSection.classList.add('hidden');
+            registerSection.classList.remove('hidden');
+        }
+
+        // Show login section
+        function showLoginSection() {
+            registerSection.classList.add('hidden');
+            loginSection.classList.remove('hidden');
+        }
+
+        // Show main application section
+        function showAppSection() {
+            loginSection.classList.add('hidden');
+            registerSection.classList.add('hidden');
+            appSection.classList.remove('hidden');
+            currentUserSpan.textContent = currentUser;
+            renderReturnsTable();
+        }
+
+        // Handle user logout
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            appSection.classList.add('hidden');
+            loginSection.classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Handle save button click
+        function handleSave() {
+            const rpoNo = document.getElementById('rpo-no').value;
+            const goodIssueSlip = document.getElementById('good-issue-slip').value;
+            const supplier = document.getElementById('supplier').value;
+            const supervisor = document.getElementById('supervisor').value;
+            
+            if (!rpoNo || !goodIssueSlip || !supplier || !supervisor) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Add supplier and supervisor to lists if they don't exist
+            if (!suppliers.includes(supplier)) {
+                suppliers.push(supplier);
+                localStorage.setItem('suppliers', JSON.stringify(suppliers));
+                updateDatalists();
+            }
+            
+            if (!supervisors.includes(supervisor)) {
+                supervisors.push(supervisor);
+                localStorage.setItem('supervisors', JSON.stringify(supervisors));
+                updateDatalists();
+            }
+            
+            const now = new Date();
+            const returnData = {
+                id: currentEditId || Date.now().toString(),
+                rpoNo,
+                goodIssueSlip,
+                supplier,
+                supervisor,
+                status: 'pending', // Always set to pending when saving
+                createdDate: now.toISOString(),
+                createdBy: currentUser,
+                remark: '',
+                returnedDate: null,
+                sentAccountDate: null,
+                lastUpdated: now.toISOString()
+            };
+            
+            if (currentEditId) {
+                // Update existing return
+                const index = returns.findIndex(r => r.id === currentEditId);
+                if (index !== -1) {
+                    // Preserve status and dates when editing
+                    returnData.status = returns[index].status;
+                    returnData.returnedDate = returns[index].returnedDate;
+                    returnData.sentAccountDate = returns[index].sentAccountDate;
+                    returns[index] = { ...returns[index], ...returnData };
+                }
+                currentEditId = null;
+                saveBtn.textContent = 'Save';
+            } else {
+                // Add new return
+                returns.push(returnData);
+            }
+            
+            localStorage.setItem('returns', JSON.stringify(returns));
+            clearForm();
+            renderReturnsTable();
+        }
+
+        // Handle cancel button click
+        function handleCancel() {
+            clearForm();
+            currentEditId = null;
+            saveBtn.textContent = 'Save';
+        }
+
+        // Clear form fields
+        function clearForm() {
+            document.getElementById('rpo-no').value = '';
+            document.getElementById('good-issue-slip').value = '';
+            document.getElementById('supplier').value = '';
+            document.getElementById('supervisor').value = '';
+        }
+
+        // Update supplier and supervisor datalists
+        function updateDatalists() {
+            supplierList.innerHTML = '';
+            supervisorList.innerHTML = '';
+            
+            suppliers.forEach(supplier => {
+                const option = document.createElement('option');
+                option.value = supplier;
+                supplierList.appendChild(option);
+            });
+            
+            supervisors.forEach(supervisor => {
+                const option = document.createElement('option');
+                option.value = supervisor;
+                supervisorList.appendChild(option);
+            });
+        }
+
+        // Render returns table based on filters
+        function renderReturnsTable() {
+            const statusFilterValue = statusFilter.value;
+            const searchValue = searchInput.value.toLowerCase();
+            
+            let filteredReturns = returns;
+            
+            // Apply status filter
+            if (statusFilterValue !== 'all') {
+                filteredReturns = filteredReturns.filter(r => r.status === statusFilterValue);
+            }
+            
+            // Apply search filter
+            if (searchValue) {
+                filteredReturns = filteredReturns.filter(r => 
+                    r.rpoNo.toLowerCase().includes(searchValue) ||
+                    r.goodIssueSlip.toLowerCase().includes(searchValue) ||
+                    r.supplier.toLowerCase().includes(searchValue) ||
+                    r.supervisor.toLowerCase().includes(searchValue)
+                );
+            }
+            
+            returnsBody.innerHTML = '';
+            
+            filteredReturns.forEach(returnItem => {
+                const row = document.createElement('tr');
+                
+                // Calculate if pending for more than 50 days
+                const createdDate = new Date(returnItem.createdDate);
+                const now = new Date();
+                const daysDiff = Math.floor((now - createdDate) / (1000 * 60 * 60 * 24));
+                const showWarning = returnItem.status === 'pending' && daysDiff > 50;
+                
+                row.innerHTML = `
+                    <td>${returnItem.rpoNo}</td>
+                    <td>${returnItem.goodIssueSlip}</td>
+                    <td>${returnItem.supplier}</td>
+                    <td>${returnItem.supervisor}</td>
+                    <td>
+                        ${showWarning ? '<span class="warning">⚠</span>' : ''}
+                        <span class="status status-${returnItem.status}">${getStatusText(returnItem.status)}</span>
+                    </td>
+                    <td>${formatDate(returnItem.createdDate)}</td>
+                    <td>${returnItem.createdBy}</td>
+                    <td class="action-buttons">
+                        <button class="btn btn-secondary detail-btn" data-id="${returnItem.id}">Details</button>
+                        <button class="btn btn-warning edit-btn" data-id="${returnItem.id}">Edit</button>
+                        <button class="btn btn-primary status-btn" data-id="${returnItem.id}">Update Status</button>
+                        <button class="btn btn-info remark-btn" data-id="${returnItem.id}">Remark</button>
+                        <button class="btn btn-danger delete-btn" data-id="${returnItem.id}">Delete</button>
+                    </td>
+                `;
+                
+                returnsBody.appendChild(row);
+            });
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.detail-btn').forEach(btn => {
+                btn.addEventListener('click', showDetails);
+            });
+            
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', handleEdit);
+            });
+            
+            document.querySelectorAll('.status-btn').forEach(btn => {
+                btn.addEventListener('click', showStatusModal);
+            });
+            
+            document.querySelectorAll('.remark-btn').forEach(btn => {
+                btn.addEventListener('click', handleRemark);
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', handleDelete);
+            });
+        }
+
+        // Get status text for display
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'PENDING';
+                case 'returned': return 'RETURNED';
+                case 'sent': return 'SEND ACCOUNT';
+                case 'complete': return 'COMPLETE';
+                default: return status.toUpperCase();
+            }
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        // Show details modal
+        function showDetails(e) {
+            const id = e.target.getAttribute('data-id');
+            const returnItem = returns.find(r => r.id === id);
+            
+            if (returnItem) {
+                const detailContent = document.getElementById('detail-content');
+                detailContent.innerHTML = `
+                    <div class="form-group">
+                        <strong>RPO NO.:</strong> ${returnItem.rpoNo}
+                    </div>
+                    <div class="form-group">
+                        <strong>GOOD ISSUE SLIP NO.:</strong> ${returnItem.goodIssueSlip}
+                    </div>
+                    <div class="form-group">
+                        <strong>SUPPLIER:</strong> ${returnItem.supplier}
+                    </div>
+                    <div class="form-group">
+                        <strong>DEPARTMENT SUPERVISOR:</strong> ${returnItem.supervisor}
+                    </div>
+                    <div class="form-group">
+                        <strong>STATUS:</strong> <span class="status status-${returnItem.status}">${getStatusText(returnItem.status)}</span>
+                    </div>
+                    <div class="form-group">
+                        <strong>CREATED DATE:</strong> ${formatDate(returnItem.createdDate)}
+                    </div>
+                    <div class="form-group">
+                        <strong>CREATED BY:</strong> ${returnItem.createdBy}
+                    </div>
+                    ${returnItem.returnedDate ? `
+                    <div class="form-group">
+                        <strong>RETURNED DATE:</strong> ${formatDate(returnItem.returnedDate)}
+                    </div>
+                    ` : ''}
+                    ${returnItem.sentAccountDate ? `
+                    <div class="form-group">
+                        <strong>SENT ACCOUNT DATE:</strong> ${formatDate(returnItem.sentAccountDate)}
+                    </div>
+                    ` : ''}
+                    ${returnItem.remark ? `
+                    <div class="form-group">
+                        <strong>REMARK:</strong>
+                        <div class="remark-display">${returnItem.remark}</div>
+                    </div>
+                    ` : ''}
+                    <div class="form-group">
+                        <strong>LAST UPDATED:</strong> ${formatDate(returnItem.lastUpdated)}
+                    </div>
+                `;
+                detailModal.style.display = 'flex';
+            }
+        }
+
+        // Handle edit button click
+        function handleEdit(e) {
+            const id = e.target.getAttribute('data-id');
+            const returnItem = returns.find(r => r.id === id);
+            
+            if (returnItem) {
+                document.getElementById('rpo-no').value = returnItem.rpoNo;
+                document.getElementById('good-issue-slip').value = returnItem.goodIssueSlip;
+                document.getElementById('supplier').value = returnItem.supplier;
+                document.getElementById('supervisor').value = returnItem.supervisor;
+                
+                currentEditId = id;
+                saveBtn.textContent = 'Update';
+            }
+        }
+
+        // Show status update modal
+        function showStatusModal(e) {
+            const id = e.target.getAttribute('data-id');
+            const returnItem = returns.find(r => r.id === id);
+            
+            if (returnItem) {
+                currentStatusId = id;
+                statusSelect.value = returnItem.status;
+                handleStatusSelectChange();
+                statusModal.style.display = 'flex';
+            }
+        }
+
+        // Handle status select change
+        function handleStatusSelectChange() {
+            const selectedStatus = statusSelect.value;
+            
+            // Hide all date fields first
+            returnedDateField.classList.add('hidden');
+            sentDateField.classList.add('hidden');
+            
+            // Show relevant date field based on selected status
+            if (selectedStatus === 'returned') {
+                returnedDateField.classList.remove('hidden');
+            } else if (selectedStatus === 'sent') {
+                sentDateField.classList.remove('hidden');
+            }
+        }
+
+        // Update status
+        function updateStatus() {
+            if (!currentStatusId) return;
+            
+            const selectedStatus = statusSelect.value;
+            const returnedDate = document.getElementById('returned-date').value;
+            const sentDate = document.getElementById('sent-date').value;
+            
+            const returnItem = returns.find(r => r.id === currentStatusId);
+            
+            if (returnItem) {
+                returnItem.status = selectedStatus;
+                returnItem.lastUpdated = new Date().toISOString();
+                
+                // Set dates based on status
+                if (selectedStatus === 'returned' && returnedDate) {
+                    returnItem.returnedDate = returnedDate + 'T00:00:00';
+                }
+                
+                if (selectedStatus === 'sent' && sentDate) {
+                    returnItem.sentAccountDate = sentDate + 'T00:00:00';
+                    // Automatically set to complete when status is sent to account
+                    returnItem.status = 'complete';
+                }
+                
+                localStorage.setItem('returns', JSON.stringify(returns));
+                statusModal.style.display = 'none';
+                renderReturnsTable();
+                
+                // Reset date fields
+                document.getElementById('returned-date').value = '';
+                document.getElementById('sent-date').value = '';
+            }
+        }
+
+        // Handle remark button click
+        function handleRemark(e) {
+            const id = e.target.getAttribute('data-id');
+            const returnItem = returns.find(r => r.id === id);
+            
+            if (returnItem) {
+                document.getElementById('remark-text').value = returnItem.remark || '';
+                currentRemarkId = id;
+                remarkModal.style.display = 'flex';
+            }
+        }
+
+        // Save remark
+        function saveRemark() {
+            if (!currentRemarkId) return;
+            
+            const remark = document.getElementById('remark-text').value;
+            const returnItem = returns.find(r => r.id === currentRemarkId);
+            
+            if (returnItem) {
+                returnItem.remark = remark;
+                returnItem.lastUpdated = new Date().toISOString();
+                localStorage.setItem('returns', JSON.stringify(returns));
+                remarkModal.style.display = 'none';
+                renderReturnsTable();
+            }
+        }
+
+        // Handle delete button click
+        function handleDelete(e) {
+            const id = e.target.getAttribute('data-id');
+            
+            if (confirm('Are you sure you want to delete this return?')) {
+                returns = returns.filter(r => r.id !== id);
+                localStorage.setItem('returns', JSON.stringify(returns));
+                renderReturnsTable();
+            }
+        }
+
+        // Show export modal
+        function showExportModal() {
+            exportModal.style.display = 'flex';
+        }
+
+        // Close all modals
+        function closeModals() {
+            statusModal.style.display = 'none';
+            remarkModal.style.display = 'none';
+            detailModal.style.display = 'none';
+            exportModal.style.display = 'none';
+        }
+
+        // Export to PDF (simulated)
+        function exportToPDF() {
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+            
+            // In a real application, this would generate and download a PDF
+            // For this demo, we'll just show an alert
+            alert(`PDF export for dates ${startDate} to ${endDate} would be generated here.`);
+            exportModal.style.display = 'none';
+        }
+
+        // Initialize the application when the page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
